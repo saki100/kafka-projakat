@@ -18,13 +18,13 @@ const server = http.createServer(app);
 // WebSocket server
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:3000', // Dodajte URL vašeg React klijenta
+    origin: 'http://localhost:3000', // url reacta 
     methods: ['GET', 'POST'],
   },
 });
 
 // Kreiranje Kafka producera
-const kafkaClient = new kafka.KafkaClient({ kafkaHost: 'localhost:9092' }); // Postavite odgovarajuću konfiguraciju za vaš Kafka broker
+const kafkaClient = new kafka.KafkaClient({ kafkaHost: 'localhost:9092' }); 
 const producer = new kafka.Producer(kafkaClient);
 
 // Array za čuvanje konektovanih klijenata
@@ -62,16 +62,6 @@ app.post('/send-request', (req, res) => {
             res.status(500).json({ message: `Greška pri slanju poruke u topic1: ${err.message}` });
         } else {
             console.log('Poruka uspešno poslata na Kafka:', data);
-
-            // Nakon uspešnog slanja u topic1, pozivamo /api/receive-data endpoint
-            fetch('http://localhost:8000/api/receive-data', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ city: selectedCity }),
-            });
-
             res.status(200).json({ message: `Grad ${selectedCity} uspešno poslat u topic1 i obradjen!` });
         }
     });
